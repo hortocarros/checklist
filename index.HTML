@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão - HORTOCARROS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 95%;
+            max-width: 1200px; /* Aumentado para melhor visualização do dashboard */
+            background-color: #fff;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            border-bottom: 3px solid #1a237e;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .logo {
+            width: 100px;
+            height: auto;
+        }
+        h1 {
+            text-align: center;
+            color: #1a237e;
+            font-size: 2.2rem;
+            margin: 0;
+        }
+        .tab-menu {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; 
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #ddd;
+        }
+        .tab-button {
+            padding: 15px 25px;
+            border: none;
+            background-color: transparent;
+            font-size: 1.0rem;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.3s, border-bottom 0.3s;
+        }
+        .tab-button.active {
+            color: #1a237e;
+            border-bottom: 3px solid #1a237e;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        h2 {
+            color: #3949ab;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-left: 4px solid #3949ab;
+            padding-left: 10px;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"],
+        .form-group input[type="url"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #3949ab;
+            outline: none;
+            box-shadow: 0 0 5px rgba(57, 73, 171, 0.3);
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 15px;
+        }
+        .checklist-item label {
+            font-weight: normal;
+            flex-grow: 1;
+        }
+        .checklist-obs {
+            width: 100%;
+            margin-bottom: 1.5rem;
+            min-height: 80px;
+        }
+        .cost-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .cost-item input {
+            flex-grow: 1;
+        }
+        #totalGasto, #lucroBruto {
+            margin-top: 2rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: right;
+            color: #1a237e;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+        }
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .btn-primary {
+            background-color: #1a237e;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background-color: #0f1659;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        #carsList, #fornecedoresList, #sitesList {
+            margin-top: 2rem;
+            display: grid;
+            gap: 20px;
+        }
+        .card {
+            background-color: #f0f4f7;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h3 {
+            margin: 0 0 10px 0;
+            color: #1a237e;
+        }
+        .card p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .card-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .details-table th, .details-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .details-table th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        .status-ok { color: green; font-weight: bold; }
+        .status-reparo { color: red; font-weight: bold; }
+        .status-nao-verificado { color: #888; font-style: italic; }
+
+        .modal-body-content {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+        .modal-main-info { flex: 1; }
+        .modal-graph-container { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .chart-container {
+            position: relative;
+            min-height: 400px;
+            width: 100%;
+            margin-top: 2rem;
+        }
+        .profit-info {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ccc;
+        }
+        .profit-positive { color: #28a745; }
+        .profit-negative { color: #dc3545; }
+        .profit-neutral { color: #555; }
+        .site-link {
+            font-weight: bold;
+            color: #1a237e;
+            text-decoration: none;
+        }
+        .site-link:hover {
+            text-decoration: underline;
+        }
+
+        /* --- ESTILOS DO NOVO DASHBOARD --- */
+        #dashboard-tab .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .kpi-card {
+            background-color: #f0f4f7;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .kpi-card .kpi-title {
+            font-size: 1rem;
+            color: #555;
+            margin: 0 0 10px 0;
+        }
+        .kpi-card .kpi-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #1a237e;
+            margin: 0;
+        }
+        .kpi-card.faturamento { border-color: #4CAF50; }
+        .kpi-card.custo { border-color: #F44336; }
+        .kpi-card.lucro { border-color: #2196F3; }
+        .kpi-card.margem { border-color: #FFC107; }
+
+        .dashboard-section {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin-top: 2.5rem;
+        }
+        .dashboard-charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 1rem;
+        }
+        .dashboard-table-container {
+            margin-top: 2rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            h1 { font-size: 1.8rem; }
+            .modal-body-content { flex-direction: column; }
+            .tab-button { padding: 12px 15px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1><span style="color: #3949ab;">HORTOCARROS</span><br>Sistema de Gestão de Vistorias</h1>
+    </div>
+
+    <div class="tab-menu">
+        <button class="tab-button active" onclick="openTab(event, 'form-tab')">Nova Vistoria</button>
+        <button class="tab-button" onclick="openTab(event, 'view-tab')">Consultar Vistorias</button>
+        <button class="tab-button" onclick="openTab(event, 'dashboard-tab')">Dashboard</button>
+        <button class="tab-button" onclick="openTab(event, 'fornecedores-tab')">Fornecedores</button>
+        <button class="tab-button" onclick="openTab(event, 'sites-tab')">Sites para Consulta</button>
+    </div>
+
+    <div id="form-tab" class="tab-content active">
+        <form id="carForm">
+            <input type="hidden" id="editIndex" name="editIndex" value="-1">
+            <h2>Informações do Veículo</h2>
+            <div class="form-group">
+                <label for="modelo">Modelo e Ano:</label>
+                <input type="text" id="modelo" name="modelo" required>
+            </div>
+            <div class="form-group">
+                <label for="placa">Placa:</label>
+                <input type="text" id="placa" name="placa" required>
+            </div>
+            <div class="form-group">
+                <label for="quilometragem">Quilometragem:</label>
+                <input type="number" id="quilometragem" name="quilometragem" required>
+            </div>
+            <div class="form-group">
+                <label for="dataVistoria">Data da Vistoria:</label>
+                <input type="date" id="dataVistoria" name="dataVistoria" required>
+            </div>
+
+            <hr>
+            <h2>Dados Financeiros</h2>
+            <div class="form-group">
+                <label for="valorPago">Valor Pago no Carro (R$):</label>
+                <input type="text" id="valorPago" name="valorPago" oninput="formatCurrency(this)" required>
+            </div>
+            <div class="form-group">
+                <label for="custoDocumentos">Custo com Documentos (R$):</label>
+                <input type="text" id="custoDocumentos" name="custoDocumentos" oninput="formatCurrency(this)">
+            </div>
+            <div class="form-group">
+                <label for="valorFipe">Valor Tabela FIPE (R$):</label>
+                <input type="text" id="valorFipe" name="valorFipe" oninput="formatCurrency(this)">
+            </div>
+            <div class="form-group">
+                <label for="valorVenda">Valor de Venda (R$):</label>
+                <input type="text" id="valorVenda" name="valorVenda" oninput="formatCurrency(this)">
+            </div>
+            <div class="form-group">
+                <label for="dataVenda">Data da Venda:</label>
+                <input type="date" id="dataVenda" name="dataVenda">
+            </div>
+
+            <hr>
+            <h2>Checklist de Vistoria</h2>
+            <p>Selecione o status e adicione observações, se necessário.</p>
+            
+            <div class="checklist-item"><label for="pintura_status">Funilaria / Pintura</label><select id="pintura_status" name="pintura_status"><option value="nao_verificado">Não Verificado</option><option value="ok">OK</option><option value="reparo">Precisa de Reparo</option></select></div><textarea class="checklist-obs" name="pintura_obs" placeholder="Observações (ex: Pequenos arranhões, retoque necessário)..."></textarea>
+            <div class="checklist-item"><label for="motor_status">Mecânica (Motor, Câmbio, etc.)</label><select id="motor_status" name="motor_status"><option value="nao_verificado">Não Verificado</option><option value="ok">OK</option><option value="reparo">Precisa de Reparo</option></select></div><textarea class="checklist-obs" name="motor_obs" placeholder="Observações (ex: Motor com ruído estranho, vazamento de óleo)..."></textarea>
+            <div class="checklist-item"><label for="freios_status">Rodas, Pneus e Freios</label><select id="freios_status" name="freios_status"><option value="nao_verificado">Não Verificado</option><option value="ok">OK</option><option value="reparo">Precisa de Reparo</option></select></div><textarea class="checklist-obs" name="freios_obs" placeholder="Observações (ex: Pneus carecas, pastilhas do freio gastas)..."></textarea>
+            <div class="checklist-item"><label for="suspensao_status">Suspensão e Direção</label><select id="suspensao_status" name="suspensao_status"><option value="nao_verificado">Não Verificado</option><option value="ok">OK</option><option value="reparo">Precisa de Reparo</option></select></div><textarea class="checklist-obs" name="suspensao_obs" placeholder="Observações (ex: Amortecedores fracos, direção com folga)..."></textarea>
+            <div class="checklist-item"><label for="arCondicionado_status">Ar-condicionado</label><select id="arCondicionado_status" name="arCondicionado_status"><option value="nao_verificado">Não Verificado</option><option value="ok">OK</option><option value="reparo">Precisa de Reparo</option></select></div><textarea class="checklist-obs" name="arCondicionado_obs" placeholder="Observações (ex: Ar não gela, precisa de gás)..."></textarea>
+            <div class="checklist-item"><label for="vidros_status">Vidros / Portas</label><select id="vidros_status" name="vidros_status"><option value="nao_verificado">Não Verificado</option><option value="ok">OK</option><option value="reparo">Precisa de Reparo</option></select></div><textarea class="checklist-obs" name="vidros_obs" placeholder="Observações (ex: Vidro elétrico do passageiro com problema)..."></textarea>
+            <div class="checklist-item"><label for="documentacao_status">Multas / Licenciamento</label><select id="documentacao_status" name="documentacao_status"><option value="nao_verificado">Não Verificado</option><option value="ok">OK</option><option value="reparo">Precisa de Reparo</option></select></div><textarea class="checklist-obs" name="documentacao_obs" placeholder="Observações (ex: IPVA atrasado, multas pendentes)..."></textarea>
+            <div class="checklist-item"><label for="chaveReserva_status">Chave Reserva</label><select id="chaveReserva_status" name="chaveReserva_status"><option value="nao_verificado">Não Verificado</option><option value="ok">OK</option><option value="reparo">Precisa de Reparo</option></select></div><textarea class="checklist-obs" name="chaveReserva_obs" placeholder="Observações (ex: Chave reserva não funciona)..."></textarea>
+            <div class="checklist-item"><label for="revisoes_status">Revisões no Manual</label><select id="revisoes_status" name="revisoes_status"><option value="nao_verificado">Não Verificado</option><option value="ok">OK</option><option value="reparo">Precisa de Reparo</option></select></div><textarea class="checklist-obs" name="revisoes_obs" placeholder="Observações (ex: Nenhuma revisão registrada, última revisão há 3 anos)..."></textarea>
+            
+            <hr>
+            <h2>Registro de Custos (Manutenção)</h2>
+            <div id="custosList">
+                <div class="cost-item">
+                    <input type="text" name="descricaoCusto" placeholder="Descrição do Gasto (ex: Troca de óleo)">
+                    <input type="text" name="valorCusto" placeholder="Valor (R$)" oninput="formatCurrency(this)">
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="addCostItem()">+ Adicionar Outro Gasto</button>
+            
+            <div id="totalGasto">
+                Total de Custos: R$ <span id="valorTotal">0,00</span>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Salvar Vistoria</button>
+                <button type="button" class="btn btn-secondary" onclick="clearForm()">Limpar Formulário</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="view-tab" class="tab-content">
+        <h2>Vistorias Salvas</h2>
+        <div id="carsList">
+            <p id="noCarsMessage">Nenhuma vistoria salva ainda.</p>
+        </div>
+    </div>
+    
+    <div id="dashboard-tab" class="tab-content">
+        <h2>Dashboard Financeiro</h2>
+        <div id="dashboard-content">
+            <div class="dashboard-grid" id="kpi-container">
+                </div>
+
+            <div class="dashboard-section">
+                <h3>Evolução Financeira (Mensal)</h3>
+                <div class="chart-container">
+                    <canvas id="financialEvolutionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="dashboard-charts-grid">
+                <div class="dashboard-section">
+                    <h3>Composição de Custos</h3>
+                    <div class="chart-container">
+                        <canvas id="costCompositionChart"></canvas>
+                    </div>
+                </div>
+                <div class="dashboard-section">
+                    <h3>Lucro/Prejuízo por Veículo Vendido</h3>
+                    <div class="chart-container">
+                        <canvas id="profitPerCarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <h3>Resumo de Vendas</h3>
+                <div class="dashboard-table-container">
+                    <table class="details-table" id="salesSummaryTable">
+                        <thead>
+                            <tr>
+                                <th>Veículo</th>
+                                <th>Data da Venda</th>
+                                <th>Custo Total</th>
+                                <th>Valor da Venda</th>
+                                <th>Lucro/Prejuízo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="no-dashboard-data" style="display: none; text-align: center; padding: 40px;">
+            <p>Ainda não há dados de carros vendidos para gerar o dashboard.</p>
+            <p>Por favor, registre uma venda na aba "Nova Vistoria" ou edite uma vistoria existente.</p>
+        </div>
+    </div>
+
+    <div id="fornecedores-tab" class="tab-content">
+        <h2>Gerenciar Fornecedores</h2>
+        <form id="fornecedorForm">
+            <div class="form-group">
+                <label for="fornecedorNome">Nome do Fornecedor/Empresa:</label>
+                <input type="text" id="fornecedorNome" required>
+            </div>
+            <div class="form-group">
+                <label for="fornecedorContato">Contato (Telefone/Email):</label>
+                <input type="text" id="fornecedorContato">
+            </div>
+            <div class="form-group">
+                <label for="fornecedorEspecialidade">Especialidade:</label>
+                <input type="text" id="fornecedorEspecialidade" placeholder="Ex: Mecânico, Funileiro, Eletricista">
+            </div>
+            <button type="submit" class="btn btn-primary">Adicionar Fornecedor</button>
+        </form>
+        <hr>
+        <h2>Fornecedores Cadastrados</h2>
+        <div id="fornecedoresList">
+            <p>Nenhum fornecedor cadastrado.</p>
+        </div>
+    </div>
+
+    <div id="sites-tab" class="tab-content">
+        <h2>Gerenciar Sites para Consulta</h2>
+        <form id="siteForm">
+            <div class="form-group">
+                <label for="siteNome">Nome do Site:</label>
+                <input type="text" id="siteNome" placeholder="Ex: Tabela FIPE Oficial" required>
+            </div>
+            <div class="form-group">
+                <label for="siteUrl">URL do Site:</label>
+                <input type="url" id="siteUrl" placeholder="https://www.exemplo.com.br" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Adicionar Site</button>
+        </form>
+        <hr>
+        <h2>Sites Salvos</h2>
+        <div id="sitesList">
+            <p>Nenhum site salvo.</p>
+        </div>
+    </div>
+</div>
+
+<div id="carModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<script>
+    // CHAVES DO LOCALSTORAGE
+    const STORAGE_KEY_VISTORIAS = 'hortocarros_vistorias';
+    const STORAGE_KEY_FORNECEDORES = 'hortocarros_fornecedores';
+    const STORAGE_KEY_SITES = 'hortocarros_sites';
+    
+    // Objeto para armazenar as instâncias dos gráficos
+    const activeCharts = {};
+
+    const checklistItems = {
+        pintura: 'Funilaria / Pintura', motor: 'Mecânica (Motor, Câmbio, etc.)', freios: 'Rodas, Pneus e Freios',
+        suspensao: 'Suspensão e Direção', arCondicionado: 'Ar-condicionado', vidros: 'Vidros / Portas',
+        documentacao: 'Multas / Licenciamento', chaveReserva: 'Chave Reserva', revisoes: 'Revisões no Manual'
+    };
+    
+    // --- FUNÇÕES DE FORMATAÇÃO E UTILITÁRIAS ---
+    function formatToBRL(value) {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+    }
+
+    function formatCurrency(input) {
+        let value = input.value.replace(/\D/g, '');
+        value = (value / 100).toFixed(2).toString();
+        value = value.replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        input.value = value;
+    }
+    
+    function valueToCurrency(value) {
+        if (typeof value !== 'number') return '';
+        let val = (value / 100).toFixed(2).toString();
+        val = val.replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        return val;
+    }
+
+    function parseCurrency(value) {
+        if (!value) return 0;
+        return parseFloat(value.replace(/\./g, '').replace(',', '.'));
+    }
+
+    // --- GERENCIAMENTO DE ABAS ---
+    function openTab(evt, tabName) {
+        const tabs = document.getElementsByClassName('tab-content');
+        for (let i = 0; i < tabs.length; i++) {
+            tabs[i].classList.remove('active');
+        }
+        document.getElementById(tabName).classList.add('active');
+        
+        const buttons = document.getElementsByClassName('tab-button');
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        evt.currentTarget.classList.add('active');
+
+        if (tabName === 'view-tab') {
+            loadCarsList();
+        } else if (tabName === 'fornecedores-tab') {
+            loadFornecedores();
+        } else if (tabName === 'sites-tab') {
+            loadSites();
+        } else if (tabName === 'dashboard-tab') {
+            updateDashboard();
+        }
+    }
+
+    // --- SEÇÃO DE VISTORIAS ---
+    function addCostItem() {
+        const custosList = document.getElementById('custosList');
+        const newItem = document.createElement('div');
+        newItem.classList.add('cost-item');
+        newItem.innerHTML = `
+            <input type="text" name="descricaoCusto" placeholder="Descrição do Gasto">
+            <input type="text" name="valorCusto" placeholder="Valor (R$)" oninput="formatCurrency(this)">
+        `;
+        custosList.appendChild(newItem);
+        attachInputListeners();
+    }
+
+    function calculateTotal() {
+        let total = 0;
+        const costInputs = document.querySelectorAll('#custosList input[name="valorCusto"]');
+        costInputs.forEach(input => {
+            total += parseCurrency(input.value);
+        });
+        document.getElementById('valorTotal').innerText = total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    }
+
+    function attachInputListeners() {
+        const costInputs = document.querySelectorAll('#custosList input[name="valorCusto"]');
+        costInputs.forEach(input => {
+            input.addEventListener('input', calculateTotal);
+        });
+    }
+
+    document.getElementById('carForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const data = {};
+        const editIndex = parseInt(document.getElementById('editIndex').value, 10);
+        
+        data.modelo = document.getElementById('modelo').value;
+        data.placa = document.getElementById('placa').value;
+        data.quilometragem = document.getElementById('quilometragem').value;
+        data.dataVistoria = document.getElementById('dataVistoria').value;
+        data.dataVenda = document.getElementById('dataVenda').value;
+
+        data.valorPago = parseCurrency(document.getElementById('valorPago').value);
+        data.valorFipe = parseCurrency(document.getElementById('valorFipe').value);
+        data.valorVenda = parseCurrency(document.getElementById('valorVenda').value);
+        data.custoDocumentos = parseCurrency(document.getElementById('custoDocumentos').value);
+
+        for (const key in checklistItems) {
+            const statusKey = `${key}_status`;
+            const obsKey = `${key}_obs`;
+            data[statusKey] = document.getElementById(statusKey).value;
+            data[obsKey] = document.querySelector(`textarea[name="${obsKey}"]`).value;
+        }
+
+        const custos = [];
+        const descricoes = this.querySelectorAll('input[name="descricaoCusto"]');
+        const valores = this.querySelectorAll('input[name="valorCusto"]');
+        
+        descricoes.forEach((input, index) => {
+            const valorParsed = parseCurrency(valores[index].value);
+            if (input.value && valorParsed > 0) {
+                custos.push({ descricao: input.value, valor: valorParsed });
+            }
+        });
+        
+        data.custos = custos;
+        data.totalCustoManutencao = calculateTotalFromData(custos);
+
+        const valorPago = data.valorPago || 0;
+        const valorVenda = data.valorVenda || 0;
+        const custoDocumentos = data.custoDocumentos || 0;
+        const totalCustoManutencao = data.totalCustoManutencao || 0;
+        data.custoTotal = valorPago + custoDocumentos + totalCustoManutencao;
+        
+        data.lucro = valorVenda > 0 ? valorVenda - data.custoTotal : 0;
+
+        const vistorias = JSON.parse(localStorage.getItem(STORAGE_KEY_VISTORIAS)) || [];
+        
+        if (editIndex > -1) {
+            vistorias[editIndex] = data;
+        } else {
+            vistorias.push(data);
+        }
+
+        localStorage.setItem(STORAGE_KEY_VISTORIAS, JSON.stringify(vistorias));
+        
+        alert(`Vistoria do veículo ${data.placa} salva com sucesso!`);
+        clearForm();
+        document.querySelector('.tab-button[onclick*="view-tab"]').click();
+    });
+    
+    function clearForm() {
+        document.getElementById('carForm').reset();
+        document.getElementById('valorTotal').innerText = '0,00';
+        document.getElementById('editIndex').value = '-1';
+        clearCostItems();
+    }
+
+    function calculateTotalFromData(custos) {
+        return custos.reduce((total, item) => total + (item.valor || 0), 0);
+    }
+
+    function clearCostItems() {
+        const custosList = document.getElementById('custosList');
+        custosList.innerHTML = `
+            <div class="cost-item">
+                <input type="text" name="descricaoCusto" placeholder="Descrição do Gasto (ex: Troca de óleo)">
+                <input type="text" name="valorCusto" placeholder="Valor (R$)" oninput="formatCurrency(this)">
+            </div>
+        `;
+        attachInputListeners();
+    }
+
+    function loadCarsList() {
+        const vistorias = JSON.parse(localStorage.getItem(STORAGE_KEY_VISTORIAS)) || [];
+        const carsListDiv = document.getElementById('carsList');
+        carsListDiv.innerHTML = '';
+        
+        if (vistorias.length === 0) {
+            carsListDiv.innerHTML = '<p id="noCarsMessage">Nenhuma vistoria salva ainda.</p>';
+            return;
+        }
+
+        vistorias.forEach((car, index) => {
+            const lucroFormatado = formatToBRL(car.lucro);
+            const lucroClass = car.valorVenda > 0 ? (car.lucro >= 0 ? 'profit-positive' : 'profit-negative') : 'profit-neutral';
+            const lucroText = car.valorVenda > 0 ? `Lucro/Prejuízo: <span class="${lucroClass}">${lucroFormatado}</span>` : 'Venda pendente';
+
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.innerHTML = `
+                <h3>${car.modelo}</h3>
+                <p><strong>Placa:</strong> ${car.placa}</p>
+                <p><strong>Custo Total:</strong> ${formatToBRL(car.custoTotal)}</p>
+                <p><strong>${lucroText}</strong></p>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-primary" onclick="viewCarDetails(event, ${index})">Ver Detalhes</button>
+                    <button class="btn btn-sm btn-secondary" onclick="editCar(event, ${index})">Editar</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteCar(event, ${index})">Excluir</button>
+                </div>
+            `;
+            carsListDiv.appendChild(card);
+        });
+    }
+
+    function viewCarDetails(event, index) {
+        event.stopPropagation();
+        const vistorias = JSON.parse(localStorage.getItem(STORAGE_KEY_VISTORIAS)) || [];
+        showCarDetails(vistorias[index]);
+    }
+
+    function editCar(event, index) {
+        event.stopPropagation();
+        const vistorias = JSON.parse(localStorage.getItem(STORAGE_KEY_VISTORIAS)) || [];
+        const carData = vistorias[index];
+
+        document.getElementById('editIndex').value = index;
+        document.getElementById('modelo').value = carData.modelo;
+        document.getElementById('placa').value = carData.placa;
+        document.getElementById('quilometragem').value = carData.quilometragem;
+        document.getElementById('dataVistoria').value = carData.dataVistoria;
+        document.getElementById('dataVenda').value = carData.dataVenda || '';
+
+        document.getElementById('valorPago').value = valueToCurrency(carData.valorPago * 100);
+        document.getElementById('valorFipe').value = valueToCurrency(carData.valorFipe * 100);
+        document.getElementById('valorVenda').value = valueToCurrency(carData.valorVenda * 100);
+        document.getElementById('custoDocumentos').value = valueToCurrency((carData.custoDocumentos || 0) * 100);
+
+        for (const key in checklistItems) {
+            document.getElementById(`${key}_status`).value = carData[`${key}_status`];
+            document.querySelector(`textarea[name="${key}_obs"]`).value = carData[`${key}_obs`];
+        }
+
+        const custosList = document.getElementById('custosList');
+        custosList.innerHTML = '';
+        if (carData.custos && carData.custos.length > 0) {
+            carData.custos.forEach(custo => {
+                const newItem = document.createElement('div');
+                newItem.classList.add('cost-item');
+                newItem.innerHTML = `
+                    <input type="text" name="descricaoCusto" placeholder="Descrição do Gasto" value="${custo.descricao}">
+                    <input type="text" name="valorCusto" placeholder="Valor (R$)" oninput="formatCurrency(this)" value="${valueToCurrency(custo.valor * 100)}">
+                `;
+                custosList.appendChild(newItem);
+            });
+        } else {
+            addCostItem();
+        }
+        
+        attachInputListeners();
+        calculateTotal();
+        document.querySelector('.tab-button[onclick*="form-tab"]').click();
+    }
+
+    function deleteCar(event, index) {
+        event.stopPropagation();
+        if (confirm('Tem certeza que deseja excluir esta vistoria?')) {
+            const vistorias = JSON.parse(localStorage.getItem(STORAGE_KEY_VISTORIAS)) || [];
+            vistorias.splice(index, 1);
+            localStorage.setItem(STORAGE_KEY_VISTORIAS, JSON.stringify(vistorias));
+            loadCarsList();
+        }
+    }
+
+    function showCarDetails(car) {
+        const modal = document.getElementById('carModal');
+        const modalContent = document.getElementById('modalContent');
+        
+        let okCount = 0;
+        let repairCount = 0;
+        let detailsTableHtml = '';
+
+        for (const key in checklistItems) {
+            const status = car[`${key}_status`];
+            const obs = car[`${key}_obs`] || 'Nenhuma observação.';
+            let statusText = 'Não Verificado';
+            let statusClass = 'status-nao-verificado';
+            if (status === 'ok') { statusText = 'OK'; statusClass = 'status-ok'; okCount++; } 
+            else if (status === 'reparo') { statusText = 'Precisa de Reparo'; statusClass = 'status-reparo'; repairCount++; }
+            detailsTableHtml += `<tr><td>${checklistItems[key]}</td><td><span class="${statusClass}">${statusText}</span></td><td>${obs}</td></tr>`;
+        }
+        
+        const totalItems = okCount + repairCount;
+        const pieChartCanvasId = 'pieChart_' + car.placa.replace(/[^a-zA-Z0-9]/g, '');
+        const barChartCanvasId = 'barChart_' + car.placa.replace(/[^a-zA-Z0-9]/g, '');
+
+        const custoInvestido = car.custoTotal;
+        const lucroPercentual = custoInvestido > 0 && car.valorVenda > 0 ? (car.lucro / custoInvestido) * 100 : 0;
+        
+        const lucroBrutoClass = car.valorVenda > 0 ? (car.lucro >= 0 ? 'profit-positive' : 'profit-negative') : 'profit-neutral';
+        const lucroBrutoText = car.valorVenda > 0 ? (car.lucro >= 0 ? 'Lucro Bruto' : 'Prejuízo Bruto') : 'Venda Pendente';
+        const lucroBrutoFormatado = car.valorVenda > 0 ? `${formatToBRL(car.lucro)} (${lucroPercentual.toFixed(2)}%)` : '';
+        
+        let detailsHtml = `
+            <h2>Detalhes da Vistoria</h2>
+            <div class="modal-body-content">
+                <div class="modal-main-info">
+                    <p><strong>Modelo:</strong> ${car.modelo}</p>
+                    <p><strong>Placa:</strong> ${car.placa}</p>
+                    <p><strong>Quilometragem:</strong> ${car.quilometragem} km</p>
+                    <p><strong>Data da Vistoria:</strong> ${new Date(car.dataVistoria + 'T00:00:00').toLocaleDateString('pt-BR')}</p>
+                    <p><strong>Data da Venda:</strong> ${car.dataVenda ? new Date(car.dataVenda + 'T00:00:00').toLocaleDateString('pt-BR') : 'Não vendido'}</p>
+                    <hr>
+                    <h3>Informações Financeiras</h3>
+                    <p><strong>Valor Pago:</strong> ${formatToBRL(car.valorPago)}</p>
+                    <p><strong>Custo com Documentos:</strong> ${formatToBRL(car.custoDocumentos)}</p>
+                    <p><strong>Custos de Manutenção:</strong> ${formatToBRL(car.totalCustoManutencao)}</p>
+                    <p><strong>CUSTO TOTAL:</strong> ${formatToBRL(car.custoTotal)}</p>
+                    <p><strong>Valor Tabela FIPE:</strong> ${formatToBRL(car.valorFipe)}</p>
+                    <p><strong>Valor de Venda:</strong> ${formatToBRL(car.valorVenda)}</p>
+                    <p class="profit-info"><strong>${lucroBrutoText}:</strong> <span class="${lucroBrutoClass}">${lucroBrutoFormatado}</span></p>
+                </div>
+                <div class="modal-graph-container">
+                    <canvas id="${pieChartCanvasId}"></canvas>
+                    <canvas id="${barChartCanvasId}" style="margin-top: 20px;"></canvas>
+                </div>
+            </div>
+            <hr>
+            <h3>Itens do Checklist</h3>
+            <table class="details-table"><thead><tr><th>Item</th><th>Status</th><th>Observações</th></tr></thead><tbody>${detailsTableHtml}</tbody></table>
+            <hr>
+            <h3>Custos Registrados</h3>
+            <table class="details-table"><thead><tr><th>Descrição</th><th>Valor</th></tr></thead><tbody>
+        `;
+        
+        if (car.custos && car.custos.length > 0) {
+            car.custos.forEach(custo => {
+                detailsHtml += `<tr><td>${custo.descricao}</td><td>${formatToBRL(custo.valor)}</td></tr>`;
+            });
+        } else {
+            detailsHtml += '<tr><td colspan="2">Nenhum custo de manutenção registrado.</td></tr>';
+        }
+        
+        detailsHtml += `</tbody></table>`;
+        
+        modalContent.innerHTML = detailsHtml;
+        modal.style.display = "block";
+
+        if (totalItems > 0) {
+            new Chart(document.getElementById(pieChartCanvasId), { type: 'doughnut', data: { labels: ['OK', 'Precisa de Reparo'], datasets: [{ data: [okCount, repairCount], backgroundColor: ['#4CAF50', '#F44336'], hoverOffset: 4 }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Status do Checklist', font: { size: 16, weight: 'bold' } } } } });
+        }
+        
+        new Chart(document.getElementById(barChartCanvasId), { type: 'bar', data: { labels: ['Valores'], datasets: [ { label: 'Custo Total', data: [car.custoTotal], backgroundColor: '#dc3545' }, { label: 'Valor de Venda', data: [car.valorVenda], backgroundColor: '#4CAF50' }, { label: 'Tabela FIPE', data: [car.valorFipe], backgroundColor: '#ffc107' } ] }, options: { responsive: true, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Análise Financeira', font: { size: 16, weight: 'bold' } } }, scales: { y: { ticks: { callback: function(value) { return formatToBRL(value); } } } } } });
+    }
+
+    // --- SEÇÃO DASHBOARD ---
+    function destroyAllCharts() {
+        for (const chartId in activeCharts) {
+            if (activeCharts[chartId]) {
+                activeCharts[chartId].destroy();
+                delete activeCharts[chartId];
+            }
+        }
+    }
+
+    function updateDashboard() {
+        destroyAllCharts();
+        
+        const vistorias = JSON.parse(localStorage.getItem(STORAGE_KEY_VISTORIAS)) || [];
+        const soldCars = vistorias.filter(car => car.valorVenda > 0 && car.dataVenda);
+
+        const dashboardContent = document.getElementById('dashboard-content');
+        const noDataMessage = document.getElementById('no-dashboard-data');
+
+        if (soldCars.length === 0) {
+            dashboardContent.style.display = 'none';
+            noDataMessage.style.display = 'block';
+            return;
+        }
+
+        dashboardContent.style.display = 'block';
+        noDataMessage.style.display = 'none';
+        
+        // 1. Calcular KPIs
+        const totalRevenue = soldCars.reduce((sum, car) => sum + car.valorVenda, 0);
+        const totalCost = soldCars.reduce((sum, car) => sum + car.custoTotal, 0);
+        const totalProfit = totalRevenue - totalCost;
+        const avgProfitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+        
+        document.getElementById('kpi-container').innerHTML = `
+            <div class="kpi-card faturamento">
+                <p class="kpi-title">Faturamento Total</p>
+                <p class="kpi-value">${formatToBRL(totalRevenue)}</p>
+            </div>
+            <div class="kpi-card custo">
+                <p class="kpi-title">Custo Total</p>
+                <p class="kpi-value">${formatToBRL(totalCost)}</p>
+            </div>
+            <div class="kpi-card lucro">
+                <p class="kpi-title">Lucro Total</p>
+                <p class="kpi-value">${formatToBRL(totalProfit)}</p>
+            </div>
+            <div class="kpi-card margem">
+                <p class="kpi-title">Margem de Lucro Média</p>
+                <p class="kpi-value">${avgProfitMargin.toFixed(2)}%</p>
+            </div>
+        `;
+        
+        // 2. Gráfico de Evolução Financeira
+        const monthlyData = soldCars.reduce((acc, car) => {
+            const month = car.dataVenda.substring(0, 7); // YYYY-MM
+            if (!acc[month]) {
+                acc[month] = { revenue: 0, cost: 0, profit: 0 };
+            }
+            acc[month].revenue += car.valorVenda;
+            acc[month].cost += car.custoTotal;
+            acc[month].profit += car.lucro;
+            return acc;
+        }, {});
+
+        const sortedMonths = Object.keys(monthlyData).sort();
+        
+        const evolutionCtx = document.getElementById('financialEvolutionChart').getContext('2d');
+        activeCharts.financialEvolution = new Chart(evolutionCtx, {
+            type: 'line',
+            data: {
+                labels: sortedMonths,
+                datasets: [
+                    { label: 'Faturamento', data: sortedMonths.map(m => monthlyData[m].revenue), borderColor: '#4CAF50', backgroundColor: 'rgba(76, 175, 80, 0.1)', fill: true, tension: 0.1 },
+                    { label: 'Custo', data: sortedMonths.map(m => monthlyData[m].cost), borderColor: '#F44336', backgroundColor: 'rgba(244, 67, 54, 0.1)', fill: true, tension: 0.1 },
+                    { label: 'Lucro', data: sortedMonths.map(m => monthlyData[m].profit), borderColor: '#2196F3', backgroundColor: 'rgba(33, 150, 243, 0.1)', fill: true, tension: 0.1 }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: value => formatToBRL(value) } } } }
+        });
+
+        // 3. Gráfico de Composição de Custos
+        const totalPurchaseCost = soldCars.reduce((sum, car) => sum + car.valorPago, 0);
+        const totalMaintenanceCost = soldCars.reduce((sum, car) => sum + car.totalCustoManutencao, 0);
+        const totalDocsCost = soldCars.reduce((sum, car) => sum + car.custoDocumentos, 0);
+
+        const compositionCtx = document.getElementById('costCompositionChart').getContext('2d');
+        activeCharts.costComposition = new Chart(compositionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Compra de Veículos', 'Manutenção', 'Documentação'],
+                datasets: [{
+                    data: [totalPurchaseCost, totalMaintenanceCost, totalDocsCost],
+                    backgroundColor: ['#1a237e', '#3949ab', '#5c6bc0']
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+
+        // 4. Gráfico de Lucro por Veículo
+        const profitPerCarCtx = document.getElementById('profitPerCarChart').getContext('2d');
+        activeCharts.profitPerCar = new Chart(profitPerCarCtx, {
+            type: 'bar',
+            data: {
+                labels: soldCars.map(car => `${car.modelo} (${car.placa})`),
+                datasets: [{
+                    label: 'Lucro/Prejuízo (R$)',
+                    data: soldCars.map(car => car.lucro),
+                    backgroundColor: soldCars.map(car => car.lucro >= 0 ? 'rgba(75, 192, 192, 0.6)' : 'rgba(255, 99, 132, 0.6)'),
+                    borderColor: soldCars.map(car => car.lucro >= 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'),
+                    borderWidth: 1
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: value => formatToBRL(value) } } } }
+        });
+
+        // 5. Tabela de Resumo de Vendas
+        const tableBody = document.getElementById('salesSummaryTable').querySelector('tbody');
+        tableBody.innerHTML = '';
+        soldCars.sort((a, b) => new Date(b.dataVenda) - new Date(a.dataVenda)).forEach(car => {
+            const row = tableBody.insertRow();
+            const lucroClass = car.lucro >= 0 ? 'profit-positive' : 'profit-negative';
+            row.innerHTML = `
+                <td>${car.modelo} (${car.placa})</td>
+                <td>${new Date(car.dataVenda + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                <td>${formatToBRL(car.custoTotal)}</td>
+                <td>${formatToBRL(car.valorVenda)}</td>
+                <td><strong class="${lucroClass}">${formatToBRL(car.lucro)}</strong></td>
+            `;
+        });
+    }
+
+    // --- SEÇÃO DE FORNECEDORES ---
+    document.getElementById('fornecedorForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const fornecedor = {
+            nome: document.getElementById('fornecedorNome').value,
+            contato: document.getElementById('fornecedorContato').value,
+            especialidade: document.getElementById('fornecedorEspecialidade').value,
+        };
+        
+        const fornecedores = JSON.parse(localStorage.getItem(STORAGE_KEY_FORNECEDORES)) || [];
+        fornecedores.push(fornecedor);
+        localStorage.setItem(STORAGE_KEY_FORNECEDORES, JSON.stringify(fornecedores));
+        
+        this.reset();
+        loadFornecedores();
+    });
+
+    function loadFornecedores() {
+        const fornecedores = JSON.parse(localStorage.getItem(STORAGE_KEY_FORNECEDORES)) || [];
+        const listDiv = document.getElementById('fornecedoresList');
+        listDiv.innerHTML = '';
+
+        if (fornecedores.length === 0) {
+            listDiv.innerHTML = '<p>Nenhum fornecedor cadastrado.</p>';
+            return;
+        }
+
+        fornecedores.forEach((f, index) => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.innerHTML = `
+                <h3>${f.nome}</h3>
+                <p><strong>Contato:</strong> ${f.contato}</p>
+                <p><strong>Especialidade:</strong> ${f.especialidade}</p>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-danger" onclick="deleteFornecedor(${index})">Excluir</button>
+                </div>
+            `;
+            listDiv.appendChild(card);
+        });
+    }
+
+    function deleteFornecedor(index) {
+        if (confirm('Tem certeza que deseja excluir este fornecedor?')) {
+            const fornecedores = JSON.parse(localStorage.getItem(STORAGE_KEY_FORNECEDORES)) || [];
+            fornecedores.splice(index, 1);
+            localStorage.setItem(STORAGE_KEY_FORNECEDORES, JSON.stringify(fornecedores));
+            loadFornecedores();
+        }
+    }
+
+    // --- SEÇÃO DE SITES ---
+    document.getElementById('siteForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const site = {
+            nome: document.getElementById('siteNome').value,
+            url: document.getElementById('siteUrl').value,
+        };
+        
+        const sites = JSON.parse(localStorage.getItem(STORAGE_KEY_SITES)) || [];
+        sites.push(site);
+        localStorage.setItem(STORAGE_KEY_SITES, JSON.stringify(sites));
+        
+        this.reset();
+        loadSites();
+    });
+
+    function loadSites() {
+        const sites = JSON.parse(localStorage.getItem(STORAGE_KEY_SITES)) || [];
+        const listDiv = document.getElementById('sitesList');
+        listDiv.innerHTML = '';
+
+        if (sites.length === 0) {
+            listDiv.innerHTML = '<p>Nenhum site salvo.</p>';
+            return;
+        }
+
+        sites.forEach((s, index) => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.innerHTML = `
+                <h3>${s.nome}</h3>
+                <p><a href="${s.url}" target="_blank" class="site-link">${s.url}</a></p>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-danger" onclick="deleteSite(${index})">Excluir</button>
+                </div>
+            `;
+            listDiv.appendChild(card);
+        });
+    }
+
+    function deleteSite(index) {
+        if (confirm('Tem certeza que deseja excluir este site?')) {
+            const sites = JSON.parse(localStorage.getItem(STORAGE_KEY_SITES)) || [];
+            sites.splice(index, 1);
+            localStorage.setItem(STORAGE_KEY_SITES, JSON.stringify(sites));
+            loadSites();
+        }
+    }
+
+    // --- MODAL E INICIALIZAÇÃO ---
+    const modal = document.getElementById("carModal");
+    const closeBtn = document.getElementsByClassName("close-button")[0];
+    closeBtn.onclick = function() { modal.style.display = "none"; }
+    window.onclick = function(event) { if (event.target == modal) { modal.style.display = "none"; } }
+
+    // Inicializa a página
+    attachInputListeners();
+</script>
+
+</body>
+</html>
